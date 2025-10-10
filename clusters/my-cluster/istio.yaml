@@ -1,4 +1,4 @@
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+apiVersion: kustomize.toolkit.fluxcd.io/v2
 kind: Kustomization
 metadata:
   name: istio-system
@@ -16,7 +16,7 @@ spec:
       - kind: ConfigMap
         name: istio-version
 ---
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+apiVersion: kustomize.toolkit.fluxcd.io/v2
 kind: Kustomization
 metadata:
   name: istio-gateway
