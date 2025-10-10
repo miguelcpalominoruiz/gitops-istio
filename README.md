@@ -31,7 +31,7 @@ Canary Releases and A/B Testing for your applications.
 
 ## Prerequisites
 
-You'll need a Kubernetes cluster **v1.20** or newer with `LoadBalancer` support. 
+You'll need a Kubernetes cluster **v1.20** or newer with `LoadBalancer` support.
 
 For testing purposes you can use Minikube with 2 CPUs and 4GB of memory:
 ```bash
@@ -83,8 +83,8 @@ The above command requires ssh-agent, if you're using Windows see
 [flux bootstrap github](https://fluxcd.io/docs/guides/installation/#github-and-github-enterprise) documentation.
 
 At bootstrap, Flux generates an SSH key and prints the public key.
-In order to sync your cluster state with git you need to copy the public key and create a deploy key with write 
-access on your GitHub repository. On GitHub go to _Settings > Deploy keys_ click on _Add deploy key_, 
+In order to sync your cluster state with git you need to copy the public key and create a deploy key with write
+access on your GitHub repository. On GitHub go to _Settings > Deploy keys_ click on _Add deploy key_,
 check _Allow write access_, paste the Flux public key and click _Add key_.
 
 When Flux has access to your repository it will do the following:
@@ -146,7 +146,7 @@ You can customize the Istio installation using the Flux `HelmReleases` located a
 [istio/system/istio.yaml](https://github.com/stefanprodan/gitops-istio/blob/main/istio/system/istio.yaml):
 
 ```yaml
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: istio-gateway
@@ -196,8 +196,8 @@ and when the PR is merged into the main branch, Flux will upgrade Istio on the p
 ## Application bootstrap
 
 When Flux syncs the Git repository with your cluster, it creates the frontend/backend deployment, HPA and a canary object.
-Flagger uses the canary definition to create a series of objects: Kubernetes deployments, 
-ClusterIP services, Istio destination rules and virtual services. These objects expose the application on the mesh and drive 
+Flagger uses the canary definition to create a series of objects: Kubernetes deployments,
+ClusterIP services, Istio destination rules and virtual services. These objects expose the application on the mesh and drive
 the canary analysis and promotion.
 
 ```bash
@@ -217,7 +217,7 @@ destinationrule.networking.istio.io/frontend-primary
 virtualservice.networking.istio.io/frontend
 ```
 
-Check if Flagger has successfully initialized the canaries: 
+Check if Flagger has successfully initialized the canaries:
 
 ```
 kubectl -n prod get canaries
@@ -227,7 +227,7 @@ backend    Initialized   0
 frontend   Initialized   0
 ```
 
-When the `frontend-primary` deployment comes online, 
+When the `frontend-primary` deployment comes online,
 Flagger will route all traffic to the primary pods and scale to zero the `frontend` deployment.
 
 Find the Istio ingress gateway address with:
@@ -248,7 +248,7 @@ A canary analysis is triggered by changes in any of the following objects:
 * Deployment PodSpec (container image, command, ports, env, etc)
 * ConfigMaps and Secrets mounted as volumes or mapped to environment variables
 
-For workloads that are not receiving constant traffic Flagger can be configured with a webhook, 
+For workloads that are not receiving constant traffic Flagger can be configured with a webhook,
 that when called, will start a load test for the target workload. The canary configuration can be found
 at [apps/backend/canary.yaml](https://github.com/stefanprodan/gitops-istio/blob/main/apps/backend/canary.yaml).
 
@@ -309,7 +309,7 @@ During the analysis the canary’s progress can be monitored with Grafana. You c
 kubectl -n istio-system port-forward svc/flagger-grafana 3000:80
 ```
 
-The Istio dashboard URL is 
+The Istio dashboard URL is
 http://localhost:3000/d/flagger-istio/istio-canary?refresh=10s&orgId=1&var-namespace=prod&var-primary=backend-primary&var-canary=backend
 
 ![Canary Deployment](https://raw.githubusercontent.com/fluxcd/flagger/main/docs/screens/demo-backend-dashboard.png)
@@ -318,8 +318,8 @@ Note that if new changes are applied to the deployment during the canary analysi
 
 ## A/B testing
 
-Besides weighted routing, Flagger can be configured to route traffic to the canary based on HTTP match conditions. 
-In an A/B testing scenario, you'll be using HTTP headers or cookies to target a certain segment of your users. 
+Besides weighted routing, Flagger can be configured to route traffic to the canary based on HTTP match conditions.
+In an A/B testing scenario, you'll be using HTTP headers or cookies to target a certain segment of your users.
 This is particularly useful for frontend applications that require session affinity.
 
 You can enable A/B testing by specifying the HTTP match conditions and the number of iterations:
@@ -342,7 +342,7 @@ You can enable A/B testing by specifying the HTTP match conditions and the numbe
             regex: "^(.*?;)?(type=insider)(;.*)?$"
 ```
 
-The above configuration will run an analysis for two minutes targeting Firefox users and those that 
+The above configuration will run an analysis for two minutes targeting Firefox users and those that
 have an insider cookie. The frontend configuration can be found at `apps/frontend/canary.yaml`.
 
 Trigger a deployment by updating the frontend container image:
@@ -387,7 +387,7 @@ prod        backend   Succeeded     0
 
 Flagger makes use of the metrics provided by Istio telemetry to validate the canary workload.
 The frontend app [analysis](https://github.com/stefanprodan/gitops-istio/blob/main/apps/frontend/canary.yaml)
-defines two metric checks: 
+defines two metric checks:
 
 ```yaml
     metrics:
@@ -425,7 +425,7 @@ Generate latency:
 watch curl -b 'type=insider' http://<INGRESS-IP>/delay/1
 ```
 
-When the number of failed checks reaches the canary analysis threshold, the traffic is routed back to the primary, 
+When the number of failed checks reaches the canary analysis threshold, the traffic is routed back to the primary,
 the canary is scaled to zero and the rollout is marked as failed.
 
 ```text
