@@ -19,7 +19,7 @@ spec:
   chart:
     spec:
       chart: nginx
-      version: 15.0.0
+      version: 22.0.10
       sourceRef:
         kind: HelmRepository
         name: bitnami
@@ -29,4 +29,3 @@ spec:
       type: ClusterIP
       port: 80
     replicaCount: 1
-
